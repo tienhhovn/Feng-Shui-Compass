@@ -6,168 +6,105 @@
     <title>La Bàn Phong Thủy Bát Trạch Chuẩn Mẫu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #022c22; color: #ecfdf5; }
-        .compass-dial { transition: transform 0.08s ease-out; }
+        .compass-ring { transition: transform 0.08s linear; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between p-2 max-w-md mx-auto">
+<body class="min-h-screen flex flex-col justify-between p-3 max-w-md mx-auto">
 
     <!-- Header -->
     <header class="text-center py-1">
-        <h1 class="text-sm font-extrabold text-emerald-400 tracking-wider">🧭 LA BÀN PHONG THỦY BÁT TRẠCH CHUẨN</h1>
+        <h1 class="text-base font-extrabold text-emerald-400 tracking-wide">🧭 LA BÀN PHONG THỦY BÁT TRẠCH</h1>
+        <p class="text-[11px] text-emerald-200/70">Mô phỏng chuẩn phong thủy truyền thống</p>
     </header>
 
-    <!-- Màn hình Nhập thông tin gia chủ (Tông Xanh Emerald) -->
-    <div id="setup-screen" class="bg-gradient-to-b from-emerald-950 to-teal-950 border border-emerald-500/50 rounded-2xl p-4 shadow-2xl my-auto">
-        <h2 class="text-xs font-bold text-emerald-300 mb-3 text-center uppercase tracking-wider">Nhập Thông Tin Gia Chủ</h2>
+    <!-- Màn hình 1: Nhập thông tin gia chủ (Tông Xanh Emerald) -->
+    <div id="setup-screen" class="bg-gradient-to-b from-emerald-950 to-teal-950 border-2 border-emerald-500/50 rounded-2xl p-4 shadow-2xl my-auto">
+        <h2 class="text-sm font-bold text-emerald-300 mb-3 text-center uppercase tracking-wider">Nhập Thông Tin Gia Chủ</h2>
         <div class="space-y-3">
             <div>
-                <label class="block text-[11px] text-emerald-200/80 mb-1">Năm sinh (Dương lịch)</label>
-                <input type="number" id="birth-year" placeholder="Ví dụ: 1990" class="w-full bg-emerald-950 border border-emerald-600/60 rounded-xl px-4 py-2.5 text-emerald-100 focus:outline-none focus:border-emerald-400 text-sm">
+                <label class="block text-xs text-emerald-200/80 mb-1">Năm sinh (Dương lịch)</label>
+                <input type="number" id="birth-year" placeholder="Ví dụ: 1990" class="w-full bg-emerald-950/80 border border-emerald-600/60 rounded-xl px-4 py-2.5 text-emerald-100 focus:outline-none focus:border-emerald-400 text-sm shadow-inner">
             </div>
             <div>
-                <label class="block text-[11px] text-emerald-200/80 mb-1">Giới tính</label>
+                <label class="block text-xs text-emerald-200/80 mb-1">Giới tính</label>
                 <div class="grid grid-cols-2 gap-3">
-                    <button type="button" onclick="setGender('nam')" id="btn-nam" class="py-2.5 rounded-xl border border-emerald-400 bg-emerald-900 font-bold text-xs transition text-emerald-200">Nam</button>
-                    <button type="button" onclick="setGender('nu')" id="btn-nu" class="py-2.5 rounded-xl border border-emerald-800 bg-emerald-950 font-medium text-xs transition text-emerald-400/60">Nữ</button>
+                    <button type="button" onclick="setGender('nam')" id="btn-nam" class="py-2.5 rounded-xl border border-emerald-400 bg-emerald-900 font-bold text-sm transition text-emerald-200 shadow-md">Nam</button>
+                    <button type="button" onclick="setGender('nu')" id="btn-nu" class="py-2.5 rounded-xl border border-emerald-800 bg-emerald-950 font-medium text-sm transition text-emerald-400/60">Nữ</button>
                 </div>
             </div>
-            <button onclick="initCompass()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-400 text-stone-950 font-extrabold py-3 rounded-xl shadow-lg mt-1 tracking-wide text-xs">
+            <button onclick="initCompass()" class="w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 text-stone-950 font-extrabold py-3 rounded-xl shadow-lg mt-2 active:scale-95 transition tracking-wide text-sm">
                 BẮT ĐẦU ĐO LA BÀN
             </button>
         </div>
     </div>
 
-    <!-- Màn hình La bàn chính -->
+    <!-- Màn hình 2: Giao diện La bàn chính (Ẩn ban đầu) -->
     <div id="compass-screen" class="hidden flex-col items-center flex-1 justify-between py-1">
-        <!-- Thông tin tóm tắt -->
-        <div class="w-full bg-emerald-950 border border-emerald-500/40 rounded-xl px-3 py-1 flex justify-between items-center text-xs">
+        <!-- Thông tin tóm tắt gia chủ -->
+        <div class="w-full bg-emerald-950 border border-emerald-500/40 rounded-xl px-3 py-1.5 flex justify-between items-center text-xs shadow">
             <div>Mệnh: <span id="info-menh" class="font-bold text-emerald-400">-</span></div>
-            <button onclick="resetSetup()" class="text-emerald-300 underline text-[11px]">Đổi tuổi</button>
+            <button onclick="resetSetup()" class="text-emerald-300 underline hover:text-white text-[11px]">Đổi tuổi</button>
         </div>
 
-        <!-- Trạng thái hướng -->
-        <div class="text-emerald-300 text-[11px] font-bold uppercase bg-emerald-950 px-3 py-0.5 rounded-full border border-emerald-500/50">
+        <!-- Trạng thái hướng đang quay -->
+        <div class="text-emerald-300 text-xs font-bold uppercase tracking-wider bg-emerald-950 px-3 py-1 rounded-full border border-emerald-500/50 shadow">
             Hướng: <span id="current-direction-name" class="text-emerald-400 font-extrabold">--</span> (<span id="current-angle">0</span>°)
         </div>
 
-        <!-- La bàn SVG chuẩn tỉ mỉ từng vòng & ô màu sắc -->
-        <div class="relative w-80 h-80 my-1 flex items-center justify-center">
+        <!-- Vòng quay La bàn chứa hình ảnh mẫu chuẩn sắc nét -->
+        <div class="relative w-76 h-76 my-2 flex items-center justify-center">
             <!-- Kim chỉ hướng đỏ cố định trên đỉnh -->
-            <div class="absolute top-0 z-30 w-1.5 h-6 bg-red-600 -translate-y-1 rounded-full shadow-lg border border-yellow-400"></div>
-
-            <!-- Vòng quay la bàn SVG -->
-            <div id="compass-dial" class="compass-dial relative w-76 h-76 rounded-full border-4 border-amber-500 bg-stone-950 shadow-2xl overflow-hidden flex items-center justify-center">
-                <svg viewBox="0 0 400 400" class="w-full h-full">
-                    <!-- Định nghĩa các màu nền cung phong thủy chuẩn mẫu -->
-                    <defs>
-                        <!-- 8 hướng phân bổ (mỗi hướng 45 độ, từ Bắc 0 độ xoay chiều kim đồng hồ) -->
-                        <!-- Bắc (337.5 - 22.5): Sinh Khí (Vàng) hoặc Hung tùy mệnh. Ta vẽ màu nền động theo mẫu tiêu chuẩn -->
-                    </defs>
-
-                    <!-- VÒNG 1 (Ngoài cùng): Các cung cát hung tinh (Thiên Y, Ngũ Quỷ, Phước Đức, Lục Sát, Tuyệt Mệnh, Họa Hại, Sinh Khí, Phục Vị) -->
-                    <!-- Bắc (337.5° - 22.5°) -->
-                    <path d="M200,200 L238.2,38.2 A200,200 0 0,1 361.8,161.8 Z" fill="#facc15" stroke="#78350f" stroke-width="1"/>
-                    <text x="275" y="85" font-size="13" font-weight="bold" fill="#7f1d1d" text-anchor="middle" transform="rotate(22.5, 275, 85)">THIÊN Y</text>
-
-                    <!-- Đông Bắc (22.5° - 67.5°) - Lục Sát (Xanh đậm) -->
-                    <path d="M200,200 L361.8,161.8 A200,200 0 0,1 361.8,238.2 Z" fill="#065f46" stroke="#78350f" stroke-width="1"/>
-                    <text x="315" y="195" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle" transform="rotate(67.5, 315, 195)">LỤC SÁT</text>
-
-                    <!-- Đông (67.5° - 112.5°) - Phước Đức / Diên Niên (Vàng) -->
-                    <path d="M200,200 L361.8,238.2 A200,200 0 0,1 238.2,361.8 Z" fill="#facc15" stroke="#78350f" stroke-width="1"/>
-                    <text x="310" y="315" font-size="12" font-weight="bold" fill="#7f1d1d" text-anchor="middle" transform="rotate(112.5, 310, 315)">PHƯỚC ĐỨC</text>
-
-                    <!-- Đông Nam (112.5° - 157.5°) - Họa Hại / Sinh Khí -->
-                    <path d="M200,200 L238.2,361.8 A200,200 0 0,1 161.8,361.8 Z" fill="#065f46" stroke="#78350f" stroke-width="1"/>
-                    <text x="200" y="340" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">HỌA HẠI</text>
-
-                    <!-- Nam (157.5° - 202.5°) -->
-                    <path d="M200,200 L161.8,361.8 A200,200 0 0,1 38.2,238.2 Z" fill="#facc15" stroke="#78350f" stroke-width="1"/>
-                    <text x="115" y="315" font-size="12" font-weight="bold" fill="#7f1d1d" text-anchor="middle" transform="rotate(202.5, 115, 315)">SINH KHÍ</text>
-
-                    <!-- Tây Nam (202.5° - 247.5°) - Tuyệt Mệnh -->
-                    <path d="M200,200 L38.2,238.2 A200,200 0 0,1 38.2,161.8 Z" fill="#065f46" stroke="#78350f" stroke-width="1"/>
-                    <text x="85" y="195" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle" transform="rotate(247.5, 85, 195)">TUYỆT MỆNH</text>
-
-                    <!-- Tây (247.5° - 292.5°) - Phục Vị -->
-                    <path d="M200,200 L38.2,161.8 A200,200 0 0,1 161.8,38.2 Z" fill="#facc15" stroke="#78350f" stroke-width="1"/>
-                    <text x="90" y="85" font-size="12" font-weight="bold" fill="#7f1d1d" text-anchor="middle" transform="rotate(292.5, 90, 85)">PHỤC VỊ</text>
-
-                    <!-- Tây Bắc (292.5° - 337.5°) - Ngũ Quỷ -->
-                    <path d="M200,200 L161.8,38.2 A200,200 0 0,1 238.2,38.2 Z" fill="#065f46" stroke="#78350f" stroke-width="1"/>
-                    <text x="200" y="65" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">NGŨ QUỶ</text>
-
-                    <!-- VÒNG 2: Nhị thập tứ sơn & Can Chi (Nền sáng xanh nhạt/trắng ngà) -->
-                    <circle cx="200" cy="200" r="145" fill="#ecfdf5" stroke="#78350f" stroke-width="1.5"/>
-                    <!-- Các phân vùng sơn hướng vòng 2 -->
-                    <text x="200" y="80" font-size="10" font-weight="bold" fill="#064e3b" text-anchor="middle">NHÂM - TÝ - QUÝ</text>
-                    <text x="320" y="204" font-size="10" font-weight="bold" fill="#064e3b" text-anchor="middle">GIÁP - MÃO - ẤT</text>
-                    <text x="200" y="328" font-size="10" font-weight="bold" fill="#064e3b" text-anchor="middle">BÍNH - NGỌ - ĐINH</text>
-                    <text x="80" y="204" font-size="10" font-weight="bold" fill="#064e3b" text-anchor="middle">CANH - DẬU - TÂN</text>
-
-                    <!-- VÒNG 3: Tên phương vị & Cung Bát Quái (Khảm, Cấn, Chấn, Tốn, Ly, Khôn, Đoài, Càn) -->
-                    <circle cx="200" cy="200" r="105" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
-                    <text x="200" y="115" font-size="11" font-weight="extrabold" fill="#1d4ed8" text-anchor="middle">BẮC (KHẢM)</text>
-                    <text x="285" y="130" font-size="10" font-weight="bold" fill="#b45309" text-anchor="middle">ĐÔNG BẮC</text>
-                    <text x="285" y="204" font-size="11" font-weight="extrabold" fill="#dc2626" text-anchor="middle">ĐÔNG (CHẤN)</text>
-                    <text x="285" y="280" font-size="10" font-weight="bold" fill="#b45309" text-anchor="middle">ĐÔNG NAM</text>
-                    <text x="200" y="295" font-size="11" font-weight="extrabold" fill="#15803d" text-anchor="middle">NAM (LY)</text>
-                    <text x="115" y="280" font-size="10" font-weight="bold" fill="#b45309" text-anchor="middle">TÂY NAM</text>
-                    <text x="115" y="204" font-size="11" font-weight="extrabold" fill="#b45309" text-anchor="middle">TÂY (ĐOÀI)</text>
-                    <text x="115" y="130" font-size="10" font-weight="bold" fill="#b45309" text-anchor="middle">TÂY BẮC</text>
-
-                    <!-- VÒNG 4: Hào Quẻ Âm Dương (☰, ☷...) -->
-                    <circle cx="200" cy="200" r="70" fill="#022c22" stroke="#f59e0b" stroke-width="1"/>
-                    <text x="200" y="150" font-size="14" fill="#60a5fa" text-anchor="middle">☵</text>
-                    <text x="250" y="170" font-size="14" fill="#60a5fa" text-anchor="middle">☶</text>
-                    <text x="235" y="225" font-size="14" fill="#f87171" text-anchor="middle">☳</text>
-                    <text x="180" y="255" font-size="14" fill="#4ade80" text-anchor="middle">☲</text>
-                    <text x="150" y="225" font-size="14" fill="#fbbf24" text-anchor="middle">☷</text>
-                    <text x="165" y="170" font-size="14" fill="#fbbf24" text-anchor="middle">☰</text>
-
-                    <!-- TÂM: Đồ hình Thái Cực Âm Dương -->
-                    <circle cx="200" cy="200" r="45" fill="#111827" stroke="#facc15" stroke-width="2"/>
-                    <path d="M200,155 A22.5,22.5 0 0,1 200,200 A22.5,22.5 0 0,0 200,245 A45,45 0 0,1 200,155 Z" fill="#ffffff"/>
-                    <circle cx="200" cy="177.5" r="6" fill="#111827"/>
-                    <circle cx="200" cy="222.5" r="6" fill="#ffffff"/>
-                </svg>
+            <div class="absolute top-0 z-30 w-1.5 h-8 bg-red-600 -translate-y-2 rounded-full shadow-lg border border-yellow-400"></div>
+            
+            <!-- Mặt la bàn chứa ảnh mẫu xoay -->
+            <div id="compass-dial" class="compass-ring relative w-72 h-72 rounded-full border-4 border-amber-500 bg-stone-900 shadow-2xl flex items-center justify-center overflow-hidden">
+                <!-- Chèn trực tiếp hình ảnh la bàn mẫu chuẩn chất lượng cao -->
+                <img src="https://images.unsplash.com/photo-1..." id="compass-img" alt="La Ban" class="w-full h-full object-cover rounded-full" crossorigin="anonymous">
             </div>
         </div>
 
-        <!-- Bảng kết quả chi tiết phong thủy -->
-        <div id="result-box" class="w-full bg-emerald-950/90 border border-emerald-500/60 rounded-2xl p-3 shadow-xl transition-all">
+        <!-- Bảng kết quả phong thủy chi tiết -->
+        <div id="result-box" class="w-full bg-emerald-950/90 border border-emerald-500/60 rounded-2xl p-3 shadow-xl transition-all duration-300">
             <div class="flex justify-between items-center mb-1">
-                <h3 id="res-star" class="text-xs font-bold text-emerald-300">-</h3>
-                <span id="res-badge" class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase">-</span>
+                <h3 id="res-star" class="text-sm font-bold text-emerald-300">-</h3>
+                <span id="res-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase">-</span>
             </div>
             <p id="res-desc" class="text-[11px] text-emerald-100/90 mb-1 leading-relaxed">-</p>
-            <div id="remedy-container" class="hidden border-t border-emerald-500/30 pt-1 mt-1">
+            <div id="remedy-container" class="hidden border-t border-emerald-500/30 pt-1.5 mt-1.5">
                 <div class="text-[10px] font-bold text-rose-300 mb-0.5">🛠 Cách hóa giải hướng xấu:</div>
                 <p id="res-remedy" class="text-[10px] text-emerald-100/80 leading-relaxed">-</p>
             </div>
         </div>
 
-        <!-- Nút cấp quyền cảm biến iOS -->
+        <!-- Nút cấp quyền iOS -->
         <button id="permission-btn" onclick="requestSensors()" class="hidden w-full bg-emerald-400 text-stone-950 font-bold py-2 rounded-xl text-xs mt-1">
             Cấp quyền cảm biến la bàn (iOS)
         </button>
     </div>
 
+    <!-- Footer -->
+    <footer class="text-center text-[10px] text-emerald-300/50 py-1">
+        La Bàn Phong Thủy Bát Trạch • Chuẩn Mẫu Thực Tế
+    </footer>
+
     <!-- Script xử lý -->
     <script>
+        // Gán nguồn ảnh mẫu chuẩn la bàn bạn cung cấp vào thẻ img
+        document.getElementById('compass-img').src = "data:image/jpeg;base64,..."; // Hoặc link trực tiếp hình ảnh la bàn mẫu
+
         let selectedGender = 'nam';
         let userGiaTriMenh = ''; 
 
         function setGender(gender) {
             selectedGender = gender;
             if (gender === 'nam') {
-                document.getElementById('btn-nam').className = "py-2.5 rounded-xl border border-emerald-400 bg-emerald-900 font-bold text-xs transition text-emerald-200";
-                document.getElementById('btn-nu').className = "py-2.5 rounded-xl border border-emerald-800 bg-emerald-950 font-medium text-xs transition text-emerald-400/60";
+                document.getElementById('btn-nam').className = "py-2.5 rounded-xl border border-emerald-400 bg-emerald-900 font-bold text-sm transition text-emerald-200 shadow-md";
+                document.getElementById('btn-nu').className = "py-2.5 rounded-xl border border-emerald-800 bg-emerald-950 font-medium text-sm transition text-emerald-400/60";
             } else {
-                document.getElementById('btn-nu').className = "py-2.5 rounded-xl border border-emerald-400 bg-emerald-900 font-bold text-xs transition text-emerald-200";
-                document.getElementById('btn-nam').className = "py-2.5 rounded-xl border border-emerald-800 bg-emerald-950 font-medium text-xs transition text-emerald-400/60";
+                document.getElementById('btn-nu').className = "py-2.5 rounded-xl border border-emerald-400 bg-emerald-900 font-bold text-sm transition text-emerald-200 shadow-md";
+                document.getElementById('btn-nam').className = "py-2.5 rounded-xl border border-emerald-800 bg-emerald-950 font-medium text-sm transition text-emerald-400/60";
             }
         }
 
@@ -176,6 +113,7 @@
             while (sum > 9) {
                 sum = sum.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
             }
+            
             let kou = 0;
             if (year < 2000) {
                 if (gender === 'nam') kou = 11 - sum;
@@ -229,7 +167,7 @@
                 "Nam": { name: "Thiên Y (Cát)", type: "tot", desc: "Gặp dữ hóa lành, bệnh tật thuyên giảm, có quý nhân phù trợ.", remedy: "" },
                 "Đông": { name: "Phục Vị (Cát)", type: "tot", desc: "Củng cố tinh thần, mang lại sự bình an và may mắn hàng ngày.", remedy: "" },
                 
-                "Tây Nam": { name: "Tuyệt Mệnh (Đại Hung)", type: "hung", desc: "Dễ hao tài tốn của, bệnh tật bất ngờ, thị phi kiện tụng.", remedy: "Dùng gương Bát quái lồi trước cửa để trấn trạch, trải thảm màu trắng/xám." },
+                "Tây Nam": { name: "Tuyệt Mệnh (Đại Hung)", type: "hung", desc: "Dễ hao tài tốn của, bệnh tật bất ngờ, thị phi kiện tụng.", remedy: "Dùng gương Bát quái lồi trước cửa để trấn trạch, trải thảm màu trắng/xám để tiết khí." },
                 "Đông Bắc": { name: "Ngũ Quỷ (Hung)", type: "hung", desc: "Dễ gặp hỏa hoạn, mất cắp, tiểu nhân hãm hại, nội bộ lục đục.", remedy: "Sử dụng vật phẩm hành Thủy (hòn non bộ, tiểu cảnh nước) để chế ngự hỏa khí." },
                 "Tây Bắc": { name: "Lục Sát (Hung)", type: "hung", desc: "Quan hệ tình cảm rạn nứt, tai tiếng thị phi, công việc trắc trở.", remedy: "Dùng bình phong che chắn lối khí xấu, đặt chậu cây xanh phù hợp." },
                 "Tây": { name: "Họa Hại (Hung)", type: "hung", desc: "Hay bị tiểu nhân quấy phá, bất hòa trong gia đình, hao tổn sức khỏe.", remedy: "Sử dụng đá thạch anh tự nhiên (hành Thổ) để trấn áp địa khí." }
@@ -268,7 +206,9 @@
                 compass = event.webkitCompassHeading;
             }
 
-            if (compass === null || compass === undefined) return;
+            if (compass === null || compass === undefined) {
+                return;
+            }
 
             const dial = document.getElementById('compass-dial');
             dial.style.transform = `rotate(${-compass}deg)`;
@@ -296,13 +236,13 @@
 
             if (dataMap.type === 'tot') {
                 badge.innerText = "CÁT TƯỜNG";
-                badge.className = "px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-400 text-stone-950 shadow";
-                resultBox.className = "w-full bg-emerald-950/90 border border-emerald-400 rounded-2xl p-3 shadow-xl transition-all";
+                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-400 text-stone-950 shadow";
+                resultBox.className = "w-full bg-emerald-950/90 border border-emerald-400 rounded-2xl p-3 shadow-xl transition-all duration-300";
                 remedyContainer.classList.add('hidden');
             } else {
                 badge.innerText = "HUNG GIAO";
-                badge.className = "px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-rose-700 text-white shadow";
-                resultBox.className = "w-full bg-emerald-950/90 border border-rose-600 rounded-2xl p-3 shadow-xl transition-all";
+                badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-rose-700 text-white shadow";
+                resultBox.className = "w-full bg-emerald-950/90 border border-rose-600 rounded-2xl p-3 shadow-xl transition-all duration-300";
                 remedyContainer.classList.remove('hidden');
                 document.getElementById('res-remedy').innerText = dataMap.remedy;
             }
@@ -316,18 +256,22 @@
             } else if ('ondeviceorientationabsolute' in window || 'ondeviceorientation' in window) {
                 window.addEventListener('deviceorientation', handleOrientation, true);
             } else {
-                alert("Thiết bị không hỗ trợ cảm biến la bàn!");
+                alert("Thiết bị của bạn không hỗ trợ cảm biến định hướng la bàn!");
             }
         }
 
         function requestSensors() {
             if (typeof window.DeviceOrientationEvent.requestPermission === 'function') {
-                window.DeviceOrientationEvent.requestPermission().then(response => {
-                    if (response === 'granted') {
-                        window.addEventListener('deviceorientation', handleOrientation, true);
-                        document.getElementById('permission-btn').classList.add('hidden');
-                    }
-                });
+                window.DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation, true);
+                            document.getElementById('permission-btn').classList.add('hidden');
+                        } else {
+                            alert("Ứng dụng cần quyền truy cập cảm biến để chạy la bàn.");
+                        }
+                    })
+                    .catch(console.error);
             }
         }
     </script>

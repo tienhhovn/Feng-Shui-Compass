@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>La Bàn Phong Thủy Cát Hung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .compass-ring { transition: transform 0.1s ease-out; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto">
+
+    <!-- Header -->
+    <header class="text-center py-2">
+        <h1 class="text-xl font-bold text-amber-400">🧭 La Bàn Phong Thủy Bát Trạch</h1>
+        <p class="text-xs text-slate-400">Định hướng cát hung theo tuổi gia chủ</p>
+    </header>
+
+    <!-- Bước 1: Nhập thông tin gia chủ -->
+    <div id="setup-screen" class="bg-slate-800/90 border border-slate-700 rounded-2xl p-5 shadow-xl my-auto">
+        <h2 class="text-base font-semibold text-amber-300 mb-4 text-center">Nhập Thông Tin Gia Chủ</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs text-slate-300 mb-1">Năm sinh (Dương lịch)</label>
+                <input type="number" id="birth-year" placeholder="Ví dụ: 1990" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs text-slate-300 mb-1">Giới tính</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" onclick="setGender('nam')" id="btn-nam" class="py-3 rounded-xl border border-slate-700 bg-slate-900 font-medium text-sm transition text-amber-400 border-amber-400">Nam</button>
+                    <button type="button" onclick="setGender('nu')" id="btn-nu" class="py-3 rounded-xl border border-slate-700 bg-slate-900 font-medium text-sm transition text-slate-400">Nữ</button>
+                </div>
+            </div>
+            <button onclick="initCompass()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg mt-2 active:scale-95 transition">
+                Bắt Đầu Đo La Bàn
+            </button>
+        </div>
+    </div>
+
+    <!-- Bước 2: Giao diện La bàn chính (Ẩn ban đầu) -->
+    <div id="compass-screen" class="hidden flex-col items-center flex-1 justify-around py-2">
+        <!-- Thông tin tóm tắt gia chủ -->
+        <div class="w-full bg-slate-800/60 border border-slate-700/60 rounded-xl px-4 py-2 flex justify-between items-center text-xs">
+            <div>Mệnh quẻ: <span id="info-menh" class="font-bold text-amber-400">-</span></div>
+            <button onclick="resetSetup()" class="text-slate-400 underline hover:text-white">Đổi tuổi</button>
+        </div>
+
+        <!-- Mũi tên chỉ hướng trên cùng -->
+        <div class="text-amber-400 text-xs font-semibold uppercase tracking-wider bg-slate-800/80 px-3 py-1 rounded-full border border-amber-500/30">
+            Hướng đang quay: <span id="current-direction-name" class="text-white font-bold">--</span> (<span id="current-angle">0</span>°)
+        </div>
+
+        <!-- Vòng quay La bàn -->
+        <div class="relative w-64 h-64 my-4 flex items-center justify-center">
+            <!-- Kim chỉ hướng cố định trên điện thoại -->
+            <div class="absolute top-0 z-20 w-1 h-6 bg-red-500 -translate-y-2 rounded-full shadow-md"></div>
+            
+            <!-- Mặt la bàn xoay -->
+            <div id="compass-dial" class="compass-ring relative w-full h-full rounded-full border-4 border-amber-500/40 bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl flex items-center justify-center">
+                <!-- Các phương vị cơ bản -->
+                <span class="absolute top-2 font-bold text-red-500 text-sm">B</span>
+                <span class="absolute bottom-2 font-bold text-slate-300 text-sm">N</span>
+                <span class="absolute right-3 font-bold text-slate-300 text-sm">Đ</span>
+                <span class="absolute left-3 font-bold text-slate-300 text-sm">T</span>
+                <span class="absolute top-8 right-10 text-xs text-slate-400">ĐB</span>
+                <span class="absolute top-8 left-10 text-xs text-slate-400">TB</span>
+                <span class="absolute bottom-8 right-10 text-xs text-slate-400">ĐN</span>
+                <span class="absolute bottom-8 left-10 text-xs text-slate-400">TN</span>
+                
+                <div class="w-16 h-16 rounded-full bg-slate-950 border border-amber-500/30 flex items-center justify-center text-center p-1">
+                    <span id="center-status" class="text-[10px] font-bold text-amber-400">Đang dò...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng kết quả phong thủy chi tiết -->
+        <div id="result-box" class="w-full bg-slate-800/90 border rounded-2xl p-4 shadow-xl transition-all duration-300">
+            <div class="flex justify-between items-center mb-1">
+                <h3 id="res-star" class="text-base font-bold text-amber-400">-</h3>
+                <span id="res-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase">-</span>
+            </div>
+            <p id="res-desc" class="text-xs text-slate-300 mb-2 leading-relaxed">-</p>
+            <div id="remedy-container" class="hidden border-t border-slate-700/60 pt-2 mt-2">
+                <div class="text-[11px] font-semibold text-rose-400 mb-0.5">🛠 Cách hóa giải hướng xấu:</div>
+                <p id="res-remedy" class="text-[11px] text-slate-300 leading-relaxed">-</p>
+            </div>
+        </div>
+
+        <!-- Nút kích hoạt cảm biến cho iOS (Safari) -->
+        <button id="permission-btn" onclick="requestSensors()" class="hidden w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs mt-2">
+            Cấp quyền cảm biến la bàn (iOS)
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-[10px] text-slate-500 py-1">
+        Ứng dụng La Bàn Phong Thủy Bát Trạch Di Động
+    </footer>
+
+    <!-- Script xử lý logic phong thủy & cảm biến -->
+    <script>
+        let selectedGender = 'nam';
+        let userGiaTriMenh = ''; // 'dong' hoặc 'tay'
+        let userGroupText = '';
+
+        function setGender(gender) {
+            selectedGender = gender;
+            if (gender === 'nam') {
+                document.getElementById('btn-nam').className = "py-3 rounded-xl border border-amber-400 bg-slate-900 font-medium text-sm transition text-amber-400";
+                document.getElementById('btn-nu').className = "py-3 rounded-xl border border-slate-700 bg-slate-900 font-medium text-sm transition text-slate-400";
+            } else {
+                document.getElementById('btn-nu').className = "py-3 rounded-xl border border-amber-400 bg-slate-900 font-medium text-sm transition text-amber-400";
+                document.getElementById('btn-nam').className = "py-3 rounded-xl border border-slate-700 bg-slate-900 font-medium text-sm transition text-slate-400";
+            }
+        }
+
+        // Tính quái số Bát Trạch giản lược theo năm sinh và giới tính
+        function calculateBhatTrach(year, gender) {
+            let sum = year.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            while (sum > 9) {
+                sum = sum.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            }
+            
+            let kou = 0;
+            if (year < 2000) {
+                if (gender === 'nam') kou = 11 - sum;
+                else kou = 4 + sum;
+            } else {
+                if (gender === 'nam') kou = 9 - sum;
+                else kou = 6 + sum;
+            }
+            while (kou > 9) {
+                kou = kou.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            }
+            if (kou === 5) kou = gender === 'nam' ? 2 : 8;
+
+            // Đông tứ mệnh: 1, 3, 4, 9 | Tây tứ mệnh: 2, 5, 6, 7, 8
+            const dongTuMenh = [1, 3, 4, 9];
+            if (dongTuMenh.includes(kou)) {
+                return { group: 'dong', text: 'Đông Tứ Mệnh (Hợp hướng Bắc, Nam, Đông, Đông Nam)' };
+            } else {
+                return { group: 'tay', text: 'Tây Tứ Mệnh (Hợp hướng Tây, Tây Bắc, Tây Nam, Đông Bắc)' };
+            }
+        }
+
+        function initCompass() {
+            const yearInput = document.getElementById('birth-year').value;
+            if (!yearInput || yearInput < 1900 || yearInput > 2025) {
+                alert('Vui lòng nhập năm sinh hợp lệ!');
+                return;
+            }
+
+            const result = calculateBhatTrach(parseInt(yearInput), selectedGender);
+            userGiaTriMenh = result.group;
+            userGroupText = result.text;
+
+            document.getElementById('info-menh').innerText = userGroupText;
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('compass-screen').classList.remove('hidden');
+            document.getElementById('compass-screen').classList.add('flex');
+
+            startCompassSensor();
+        }
+
+        function resetSetup() {
+            document.getElementById('compass-screen').classList.add('hidden');
+            document.getElementById('compass-screen').classList.remove('flex');
+            document.getElementById('setup-screen').classList.remove('hidden');
+            window.removeEventListener('deviceorientation', handleOrientation);
+        }
+
+        // Định nghĩa chi tiết các sao Bát Trạch tùy theo Đông/Tây mệnh và Hướng
+        // Các hướng: Bắc, Đông Bắc, Đông, Đông Nam, Nam, Tây Nam, Tây, Tây Bắc
+        const directionsData = {
+            dong: {
+                "Bắc": { name: "Sinh Khí (Đại Cát)", type: "tot", desc: "Hướng tốt nhất (Tham Lang tinh). Vượng tài lộc, sự nghiệp hanh thông, con cái phát đạt, danh tiếng vang xa.", remedy: "" },
+                "Đông Nam": { name: "Phúc Đức / Diên Năm (Cát)", type: "tot", desc: "Hướng tốt nhì (Vũ Khúc tinh). Gia đạo hòa hợp, tình cảm vợ chồng gắn kết, sức khỏe dồi dào, sống lâu.", remedy: "" },
+                "Nam": { name: "Thiên Y (Cát)", type: "tot", desc: "Hướng tốt ba (Cự Môn tinh). Gặp dữ hóa lành, bệnh tật thuyên giảm, luôn có quý nhân phù trợ trong lúc khó khăn.", remedy: "" },
+                "Đông": { name: "Phục Vị (Cát)", type: "tot", desc: "Hướng tốt ổn định (Tả Phụ tinh). Củng cố tinh thần, mang lại sự bình an, may mắn trong thi cử và công việc hàng ngày.", remedy: "" },
+                
+                "Tây Nam": { name: "Tuyệt Mệnh (Đại Hung)", type: "hung", desc: "Hướng xấu nhất (Phá Quân tinh). Dễ hao tài tốn của, bệnh tật bất ngờ, thị phi kiện tụng, tổn hại nhân đinh.", remedy: "Dùng thảm màu Trắng/Xám (Kim khắc Mộc/Hỏa tùy cục) hoặc treo gương Thái Chiếu Tinh / Gương Bát Quái lồi trước cửa để trấn trạch phản chiếu sát khí, đặt chậu cây phong thủy hợp lý." },
+                "Đông Bắc": { name: "Ngũ Quỷ (Hung)", type: "hung", desc: "Hướng xấu nhì (Liêm Trinh tinh). Dễ gặp hỏa hoạn, mất cắp, tiểu nhân hãm hại, nội bộ lục đục, tranh chấp.", remedy: "Sử dụng vật phẩm hành Thủy (hồ cá, hòn non bộ nhỏ) để tiết chế hỏa khí của sao Ngũ Quỷ; giữ khu vực này luôn sạch sẽ, thoáng đãng." },
+                "Tây Bắc": { name: "Lục Sát (Hung)", type: "hung", desc: "Hướng xấu ba (Văn Khúc tinh). Quan hệ tình cảm rạn nứt, tai tiếng thị phi, tai nạn bất ngờ, công việc trắc trở.", remedy: "Trên lối đi hoặc cửa đặt chậu cây xanh hoặc bình phong che chắn, dùng các vật phẩm thuộc hành Thủy hoặc Thổ tùy cung địa bàn để hóa giải." },
+                "Tây": { name: "Họa Hại (Hung)", type: "hung", desc: "Hướng xấu bốn (Lộc Tồn tinh). Hay bị tiểu nhân quấy phá, bất hòa trong gia đình, kiện tụng, hao tổn sức khỏe.", remedy: "Đặt bình phong chắn gió/luồng khí xấu, dùng đá thạch anh tự nhiên (Thổ) hoặc màu sắc trầm ấm để trấn áp." }
+            },
+            tay: {
+                "Tây Bắc": { name: "Sinh Khí (Đại Cát)", type: "tot", desc: "Hướng tốt nhất (Tham Lang tinh). Vượng tài lộc, sự nghiệp thăng tiến mạnh mẽ, đem lại nguồn năng lượng sống tích cực.", remedy: "" },
+                "Tây": { name: "Phúc Đức / Diên Năm (Cát)", type: "tot", desc: "Hướng tốt nhì (Vũ Khúc tinh). Gia đạo an khang thịnh vượng, tình cảm gia đình bền chặt, công danh vững chắc.", remedy: "" },
+                "Đông Bắc": { name: "Thiên Y (Cát)", type: "tot", desc: "Hướng tốt ba (Cự Môn tinh). Lợi cho sức khỏe, trường thọ, gặp quý nhân che chở, tài vận hanh thông.", remedy: "" },
+                "Tây Nam": { name: "Phục Vị (Cát)", type: "tot", desc: "Hướng tốt ổn định (Tả Phụ tinh). Bình yên nội tâm, tài chính vững vàng, củng cố ý chí và các mối quan hệ xã hội.", remedy: "" },
+                
+                "Đông Nam": { name: "Tuyệt Mệnh (Đại Hung)", type: "hung", desc: "Hướng xấu nhất (Phá Quân tinh). Tổn hại tài chính nghiêm trọng, rủi ro tai nạn, bệnh tật khó chữa.", remedy: "Dùng gương Bát quái lồi treo ở cửa chính để phản xạ sát khí, kết hợp thảm trải sàn màu sẫm phù hợp hành Kim/Thủy." },
+                "Bắc": { name: "Ngũ Quỷ (Hung)", type: "hung", desc: "Hướng xấu nhì (Liêm Trinh tinh). Dễ sinh bệnh tật, hao tài tốn của, tiểu nhân lừa gạt, gia đạo bất an.", remedy: "Sử dụng vật phẩm hành Thủy (thác nước phong thủy nhỏ) để làm suy yếu hỏa khí của sao Ngũ Quỷ." },
+                "Đông": { name: "Lục Sát (Hung)", type: "hung", desc: "Hướng xấu ba (Văn Khúc tinh). Gây tổn hại các mối quan hệ, kiện tụng, tai nạn, tiền tài khó tụ.", remedy: "Sử dụng bình phong hoặc tủ kệ chắn ngay hướng xấu, sắp xếp lại công năng phòng tránh đặt ở cung độc địa này." },
+                "Nam": { name: "Họa Hại (Hung)", type: "hung", desc: "Hướng xấu bốn (Lộc Tồn tinh). Hay gặp tai họa bất ngờ, thị phi, tinh thần mệt mỏi, công việc đình trệ.", remedy: "Sử dụng vật phẩm phong thủy hành Thổ hoặc đá thạch anh để ổn định địa khí, giữ khu vực gọn gàng." }
+            }
+        };
+
+        function getDirectionName(deg) {
+            // Chia 360 độ thành 8 hướng chính (mỗi hướng 45 độ)
+            const normalized = (deg % 360 + 360) % 360;
+            if (normalized >= 337.5 || normalized < 22.5) return "Bắc";
+            if (normalized >= 22.5 && normalized < 67.5) return "Đông Bắc";
+            if (normalized >= 67.5 && normalized < 112.5) return "Đông";
+            if (normalized >= 112.5 && normalized < 157.5) return "Đông Nam";
+            if (normalized >= 157.5 && normalized < 202.5) return "Nam";
+            if (normalized >= 202.5 && normalized < 247.5) return "Tây Nam";
+            if (normalized >= 247.5 && normalized < 292.5) return "Tây";
+            if (normalized >= 292.5 && normalized < 337.5) return "Tây Bắc";
+            return "Bắc";
+        }
+
+        let lastProcessedDir = "";
+
+        function handleOrientation(event) {
+            let compass = event.alpha; // Hướng góc xoay so với Bắc từ tính (0 - 360)
+            
+            // Hỗ trợ thêm cho iOS (webkitCompassHeading)
+            if (event.webkitCompassHeading !== undefined) {
+                compass = event.webkitCompassHeading;
+            }
+
+            if (compass === null || compass === undefined) {
+                document.getElementById('center-status').innerText = "Không hỗ trợ cảm biến";
+                return;
+            }
+
+            // Xoay mặt la bàn ngược lại với góc quay điện thoại để kim/hướng luôn bám đúng thực tế
+            const dial = document.getElementById('compass-dial');
+            dial.style.transform = `rotate(${-compass}deg)`;
+
+            const roundedAngle = Math.round(compass);
+            document.getElementById('current-angle').innerText = roundedAngle;
+
+            const dirName = getDirectionName(compass);
+            document.getElementById('current-direction-name').innerText = dirName;
+
+            // Chỉ cập nhật bảng chi tiết khi đổi hướng để đỡ giật giao diện
+            if (dirName !== lastProcessedDir) {
+                lastProcessedDir = dirName;
+                updateFengShuiResult(dirName);
+            }
+        }
+
+        function updateFengShuiResult(dirName) {
+            const dataMap = directionsData[userGiaTriMenh][dirName];
+            if (!dataMap) return;
+
+            document.getElementById('res-star').innerText = `${dirName}: ${dataMap.name}`;
+            const badge = document.getElementById('res-badge');
+            const resultBox = document.getElementById('result-box');
+            const remedyContainer = document.getElementById('remedy-container');
+
+            if (dataMap.type === 'tot') {
+                badge.innerText = "CÁT TƯỜNG";
+                badge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                resultBox.className = "w-full bg-slate-800/90 border border-emerald-500/40 rounded-2xl p-4 shadow-xl transition-all duration-300";
+                remedyContainer.classList.add('hidden');
+            } else {
+                badge.innerText = "HUN GIAO";
+                badge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/30";
+                resultBox.className = "w-full bg-slate-800/90 border border-rose-500/40 rounded-2xl p-4 shadow-xl transition-all duration-300";
+                remedyContainer.classList.remove('hidden');
+                document.getElementById('res-remedy').innerText = dataMap.remedy;
+            }
+
+            document.getElementById('res-desc').innerText = dataMap.desc;
+            document.getElementById('center-status').innerText = dirName;
+        }
+
+        function startCompassSensor() {
+            if (typeof window.DeviceOrientationEvent !== 'undefined' && typeof window.DeviceOrientationEvent.requestPermission === 'function') {
+                // Hiển thị nút cấp quyền riêng cho iOS 13+
+                document.getElementById('permission-btn').classList.remove('hidden');
+            } else if ('ondeviceorientationabsolute' in window || 'ondeviceorientation' in window) {
+                window.addEventListener('deviceorientation', handleOrientation, true);
+            } else {
+                alert("Thiết bị của bạn không hỗ trợ cảm biến định hướng la bàn!");
+            }
+        }
+
+        function requestSensors() {
+            if (typeof window.DeviceOrientationEvent.requestPermission === 'function') {
+                window.DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation, true);
+                            document.getElementById('permission-btn').classList.add('hidden');
+                        } else {
+                            alert("Ứng dụng cần quyền truy cập cảm biến để chạy la bàn.");
+                        }
+                    })
+                    .catch(console.error);
+            }
+        }
+    </script>
+</body>
+</html>

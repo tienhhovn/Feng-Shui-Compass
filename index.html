@@ -53,15 +53,15 @@
             Hướng: <span id="current-direction-name" class="text-emerald-400 font-extrabold">--</span> (<span id="current-angle">0</span>°)
         </div>
 
-        <!-- Vòng quay La bàn chứa hình ảnh mẫu chuẩn sắc nét -->
+        <!-- Vòng quay La bàn chứa ảnh mẫu phong thủy chuẩn -->
         <div class="relative w-76 h-76 my-2 flex items-center justify-center">
             <!-- Kim chỉ hướng đỏ cố định trên đỉnh -->
             <div class="absolute top-0 z-30 w-1.5 h-8 bg-red-600 -translate-y-2 rounded-full shadow-lg border border-yellow-400"></div>
             
             <!-- Mặt la bàn chứa ảnh mẫu xoay -->
             <div id="compass-dial" class="compass-ring relative w-72 h-72 rounded-full border-4 border-amber-500 bg-stone-900 shadow-2xl flex items-center justify-center overflow-hidden">
-                <!-- Chèn trực tiếp hình ảnh la bàn mẫu chuẩn chất lượng cao -->
-                <img src="https://images.unsplash.com/photo-1..." id="compass-img" alt="La Ban" class="w-full h-full object-cover rounded-full" crossorigin="anonymous">
+                <!-- Sử dụng trực tiếp ảnh mẫu chuẩn làm background của vòng quay -->
+                <div id="compass-bg" class="w-full h-full rounded-full bg-cover bg-center" style="background-image: url('data:image/jpeg;base64,...');"></div>
             </div>
         </div>
 
@@ -91,9 +91,6 @@
 
     <!-- Script xử lý -->
     <script>
-        // Gán nguồn ảnh mẫu chuẩn la bàn bạn cung cấp vào thẻ img
-        document.getElementById('compass-img').src = "data:image/jpeg;base64,..."; // Hoặc link trực tiếp hình ảnh la bàn mẫu
-
         let selectedGender = 'nam';
         let userGiaTriMenh = ''; 
 
